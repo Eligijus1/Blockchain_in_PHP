@@ -15,7 +15,7 @@ class BlockManager
 {
     public function calculateHash(Block $block): string {
         $record = (string)$block->index . $block->timestamp . (string)$block->bpm . $block->prevHash;
-        $hashed = hash('sha256', $_POST['ppasscode']);
+        $hashed = hash('sha256', $record);
         return $hashed;
     }
     
@@ -45,5 +45,18 @@ class BlockManager
 	    }
 
 	    return true;
+    }
+    
+    public function getGenesisBlock(): Block
+    {
+        $genesisBlock = new Block();
+        
+	    $genesisBlock->index = 0;
+	    $genesisBlock->timestamp = (string)time();
+        $genesisBlock->bpm = 0;
+        $genesisBlock->prevHash = "";
+	    $genesisBlock->hash = $this->calculateHash($genesisBlock);
+        
+        return $genesisBlock;
     }
 }
