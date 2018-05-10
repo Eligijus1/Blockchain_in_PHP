@@ -36,11 +36,11 @@ class BlockManager
 		    return false;
 	    }
 
-	    if ($oldBlock->hash != $newBlock.PrevHash) {
+	    if ($oldBlock->hash != $newBlock->prevHash) {
 		    return false;
 	    }
 
-	    if ($this->calculateHash($newBlock) != $newBlock.hash) {
+	    if ($this->calculateHash($newBlock) != $newBlock->hash) {
 		    return false;
 	    }
 
