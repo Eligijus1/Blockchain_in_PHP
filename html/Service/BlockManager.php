@@ -30,4 +30,20 @@ class BlockManager
 
 	    return $newBlock;
     }
+    
+    public function isBlockValid(Block $newBlock, Block $oldBlock): bool {
+	    if (($oldBlock->index+1) != $newBlock->index) {
+		    return false;
+	    }
+
+	    if ($oldBlock->hash != $newBlock.PrevHash) {
+		    return false;
+	    }
+
+	    if ($this->calculateHash($newBlock) != $newBlock.hash) {
+		    return false;
+	    }
+
+	    return true;
+    }
 }
