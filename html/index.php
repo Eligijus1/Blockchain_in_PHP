@@ -6,12 +6,12 @@ use Blockchain\Model\Block;
 use Blockchain\Service\BlockManager;
 
 // Get important variables:
-$dataFilePath = '';
+$dataFilePath = __DIR__ . '/Data/blockchain.data';
 $action       = $_POST["action"];
 $bpm          = $_POST["bpm"];
 $blockManager = new BlockManager();
 $block        = new Block();
-$blockChain   = [$blockManager->getGenesisBlock()];//unserialize( file_get_contents( $filePath ) );
+$blockChain   = file_exists($dataFilePath) ? unserialize(file_get_contents($dataFilePath)) : [$blockManager->getGenesisBlock()];
 
 // Check if "action" defined:
 if (empty($action)) {
@@ -34,8 +34,8 @@ if (!is_numeric($bpm)) {
 // Print variables (DEBUG):
 echo "\naction={$action}";
 echo "\nbpm={$bpm}";
-echo "\n" . serialize($blockChain);
+echo "\nBlocks count: " . count($blockChain);
 echo "\n";
 
-// 
+// Save blockchain:
 file_put_contents($dataFilePath, serialize($blockChain));
