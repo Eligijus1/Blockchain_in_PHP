@@ -1,5 +1,9 @@
 <?php
 /**
+ * PHP server start example:
+ * =========================
+ * php -S 0.0.0.0:8000 -t ~/Projects/Blockchain_in_PHP/html/
+ *
  * Invoke examples:
  * ================
  * curl -d "action=view" -X POST http://localhost:8000
