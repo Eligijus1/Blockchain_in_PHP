@@ -33,6 +33,11 @@ sudo apt-get install -y git
 sudo apt-get install zip -y
 sudo apt-get install unzip -y
 
+# Install MySQL:
+echo "mysql-server-5.5 mysql-server/root_password password root" | debconf-set-selections
+echo "mysql-server-5.5 mysql-server/root_password_again password root" | debconf-set-selections
+sudo apt-get -y install mysql-server-5.5
+
 # Installing PHP 7.2 and some extra libraries:
 sudo apt-get install -y php7.2
 sudo apt-get install -y php7.2-xml 
@@ -40,4 +45,5 @@ sudo apt-get install -y php7.2-curl
 sudo apt-get install -y php7.2-mbstring
 sudo apt-get install -y php7.2-bcmath
 sudo apt-get install -y php7.2-zip
-
+sudo apt-get install -y php7.2-mysql
+sudo apt-get install -y php7.2-gmp
