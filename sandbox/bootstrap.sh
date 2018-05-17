@@ -38,6 +38,10 @@ echo "mysql-server-5.5 mysql-server/root_password password root" | debconf-set-s
 echo "mysql-server-5.5 mysql-server/root_password_again password root" | debconf-set-selections
 sudo apt-get -y install mysql-server-5.5
 
+# Install composer:
+cd /tmp/
+curl -sS https://getcomposer.org/installer | sudo php -- --install-dir=/usr/local/bin --filename=composer
+
 # Installing PHP 7.2 and some extra libraries:
 sudo apt-get install -y php7.2
 sudo apt-get install -y php7.2-xml 
