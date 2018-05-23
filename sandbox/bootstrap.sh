@@ -51,3 +51,15 @@ sudo apt-get install -y php7.2-bcmath
 sudo apt-get install -y php7.2-zip
 sudo apt-get install -y php7.2-mysql
 sudo apt-get install -y php7.2-gmp
+
+# Install supervisor:
+sudo apt-get install -y supervisor
+echo "" | sudo tee -a /etc/supervisor/supervisord.conf
+echo "[inet_http_server]" | sudo tee -a /etc/supervisor/supervisord.conf
+echo "port = 9001" | sudo tee -a /etc/supervisor/supervisord.conf
+echo "username = admin" | sudo tee -a /etc/supervisor/supervisord.conf
+echo "password = admin" | sudo tee -a /etc/supervisor/supervisord.conf
+sudo service supervisor stop
+sudo service supervisor start
+
+
