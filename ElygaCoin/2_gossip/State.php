@@ -14,8 +14,8 @@ class State
      */
     public function __construct($user, $port = null, $peerPort = null)
     {
-        $this->user = $user;
-        $this->port = $port;
+        $this->user = trim($user);
+        $this->port = trim($port);
         $this->peerPort = $peerPort;
 
         $this->file = __DIR__ . '/data/' . trim($user) . '.json';
@@ -42,6 +42,9 @@ class State
                 if ($p == $this->port) {
                     continue;
                 }
+                if (empty($p)) {
+                    printf("\e[0;31m" . date_format(new \DateTime(), 'Y.m.d H:i:s') . " Current {$this->user} has data with empty port.\e[0m\n");
+                }
                 $j++;
                 $data = json_encode($this->state);
                 $peerState = @file_get_contents('http://localhost:' . $p . '/gossip', false, stream_context_create([
@@ -52,12 +55,6 @@ class State
                         'content' => $data
                     ]
                 ]));
-
-                //DEBUG:
-                //echo "\n{$j}. Ping peer {$p}. Peer state: {$peerState}.\n";
-                //echo "\n{$j}. Ping peer {$p}. State: {$peerState}. Data: {$data}\n";
-                //return;
-                //echo "\n{$j}. Ping peer {$p}.\n";
 
                 if (!$peerState) {
                     unset($this->state[$p]);
@@ -79,22 +76,16 @@ class State
     public function reload()
     {
         $this->state = (file_exists($this->file) ? json_decode(file_get_contents($this->file, true), true) : []);
-
-        /*
-        echo "DEBUG 1: {$this->file}\n";
-        echo "DEBUG 2: " . file_exists($this->file) . "\n";
-        print_r($this->state);
-        */
     }
 
     public function update($state)
     {
         if (!$state) {
             return;
-        }
+        }      
 
         foreach ($state as $port => $data) {
-            if ($port = $this->port) {
+            if ($port == $this->port) {
                 continue;
             }
             if (!isset($data['user']) || !isset($data['coins']) || !isset($data['version'])) {
