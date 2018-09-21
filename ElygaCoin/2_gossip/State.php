@@ -8,7 +8,6 @@ class State
     private $user;
     private $port;
     private $peerPort;
-    private $sessions;
 
     /**
      * @inheritdoc
@@ -19,10 +18,10 @@ class State
         $this->port = $port;
         $this->peerPort = $peerPort;
 
-        $this->sessions = explode("\n", file_get_contents(__DIR__ . '/data/sessions.txt'));
-        $this->file = __DIR__ . '/data/' . $user . '.json';
+        $this->file = __DIR__ . '/data/' . trim($user) . '.json';
+
         if ($this->port && !isset($this->state[$this->peerPort])) {
-            $this->state[$this->peerPort] = ['user' => '', 'session' => '', 'version' => 0];
+            $this->state[$this->peerPort] = ['user' => '', 'coins' => '', 'version' => 0];
         }
         if ($this->port && !isset($this->state[$this->port])) {
             $this->updateMine();
@@ -36,39 +35,56 @@ class State
     public function loop()
     {
         $i = 0;
+        $j = 0;
         while (true) {
-            printf("\033[37;40m..Current state..\033[39;49m\n%s\n", $this);
+            printf("\033[37;40m" . date_format(new \DateTime(), 'Y.m.d H:i:s') . " Current {$this->user} state:\033[39;49m\n%s\n", $this);
             foreach ($this->state as $p => $data) {
                 if ($p == $this->port) {
                     continue;
                 }
+                $j++;
                 $data = json_encode($this->state);
-                $peerState = @file_get_contents('http://localhost' . $p . '/gossip', null, stream_context_create([
+                $peerState = @file_get_contents('http://localhost:' . $p . '/gossip', false, stream_context_create([
                     'http' => [
                         'method' => 'POST',
+                        'ignore_errors' => 1,
                         'header' => "Content-type: application/json\r\nContent-length: " . strlen($data) . "\r\n",
                         'content' => $data
                     ]
                 ]));
-                if ($peerState) {
+
+                //DEBUG:
+                //echo "\n{$j}. Ping peer {$p}. Peer state: {$peerState}.\n";
+                //echo "\n{$j}. Ping peer {$p}. State: {$peerState}. Data: {$data}\n";
+                //return;
+                //echo "\n{$j}. Ping peer {$p}.\n";
+
+                if (!$peerState) {
                     unset($this->state[$p]);
                     $this->save();
                 } else {
                     $this->update(json_decode($peerState, true));
                 }
             }
-        }
-        $this->reload();
-        usleep(rand(300000, 3000000));
-        if (++$i % 2) {
-            $this->updateMine();
-            printf("\033[37;40m..Session updated..\033[39;49m\n");
+
+            $this->reload();
+            usleep(rand(300000, 3000000));
+            if (++$i % 2) {
+                $coins = $this->updateMine();
+                printf("\033[37;40m" . date_format(new \DateTime(), 'Y.m.d H:i:s') . " {$this->user} own coins updated to {$coins}.\033[39;49m\n");
+            }
         }
     }
 
     public function reload()
     {
-        $this->state = file_exists($this->file) ? json_decode(file_get_contents($this->file, true)) : [];
+        $this->state = (file_exists($this->file) ? json_decode(file_get_contents($this->file, true), true) : []);
+
+        /*
+        echo "DEBUG 1: {$this->file}\n";
+        echo "DEBUG 2: " . file_exists($this->file) . "\n";
+        print_r($this->state);
+        */
     }
 
     public function update($state)
@@ -76,11 +92,15 @@ class State
         if (!$state) {
             return;
         }
+
         foreach ($state as $port => $data) {
             if ($port = $this->port) {
                 continue;
             }
-            if (!isset($data['user']) || $data['version'] > $this->state[$port]['version']) {
+            if (!isset($data['user']) || !isset($data['coins']) || !isset($data['version'])) {
+                continue;
+            }
+            if (!isset($this->state[$port]) || (int)$data['version'] > (int)$this->state[$port]['version']) {
                 $this->state[$port] = $data;
             }
         }
@@ -89,17 +109,19 @@ class State
 
     public function updateMine()
     {
-        $session = $this->randomNumber();
+        $coins = $this->randomNumber();
         $version = $this->incrementVersion();
-        $this->state = ['user' => $this->user, 'session' => $session, 'version' => $version];
+        $this->state[$this->port] = ['user' => $this->user, 'coins' => $coins, 'version' => $version];
         $this->save();
+        
+        return $coins;
     }
 
     public function __toString()
     {
         $data = [];
         foreach ($this->state as $port => $d) {
-            $data[] = sprintf('%s/%s -- %d/%s', $port, $d['user'], $d['version'], substr($d['session'], 0, 40));
+            $data[] = sprintf(date_format(new \DateTime(), 'Y.m.d H:i:s') . " %s/%s -- %d/%s", $port, $d['user'], $d['version'], $d['coins']);
         }
         return implode("\n", $data);
     }
@@ -111,7 +133,7 @@ class State
 
     public function incrementVersion()
     {
-        return $this->state['version'] + 1;
+        return isset($this->state['version']) ? (int)($this->state['version']) + 1 : 1;
     }
 
     public function randomNumber()
