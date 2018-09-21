@@ -16,7 +16,7 @@ class State
     {
         $this->user = trim($user);
         $this->port = trim($port);
-        $this->peerPort = $peerPort;
+        $this->peerPort = trim($peerPort);
 
         $this->file = __DIR__ . '/data/' . trim($user) . '.json';
 
