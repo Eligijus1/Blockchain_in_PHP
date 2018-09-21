@@ -99,7 +99,7 @@ class State
     }
 
     public function updateMine()
-    {
+    {   
         $coins = $this->randomNumber();
         $version = $this->incrementVersion();
         $this->state[$this->port] = ['user' => $this->user, 'coins' => $coins, 'version' => $version];
@@ -112,7 +112,7 @@ class State
     {
         $data = [];
         foreach ($this->state as $port => $d) {
-            $data[] = sprintf(date_format(new \DateTime(), 'Y.m.d H:i:s') . " %s/%s -- %d/%s", $port, $d['user'], $d['version'], $d['coins']);
+            $data[] = sprintf(date_format(new \DateTime(), 'Y.m.d H:i:s') . " {$port}/{$d['user']} -- v{$d['version']}/{$d['coins']} coins.");
         }
         return implode("\n", $data);
     }
@@ -123,8 +123,8 @@ class State
     }
 
     public function incrementVersion()
-    {
-        return isset($this->state['version']) ? (int)($this->state['version']) + 1 : 1;
+    {    
+        return (isset($this->state[$this->port]['version']) ? (int)($this->state[$this->port]['version']) + 1 : 1);
     }
 
     public function randomNumber()
