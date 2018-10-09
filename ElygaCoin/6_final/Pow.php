@@ -1,5 +1,7 @@
 <?php
 
+namespace ElygaCoinFinal;
+
 class Pow
 {
     public static function hash($message)
