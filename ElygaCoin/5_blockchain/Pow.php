@@ -1,8 +1,10 @@
 <?php
 
+namespace ElygaCoin;
+
 class Pow
 {
-    public static function hash()
+    public static function hash($message)
     {
         return hash('sha256', $message);
     }
@@ -17,11 +19,9 @@ class Pow
         return $nonce;
     }
     
-    public static function isValidNonce($message, $nonce, $frontString = '000000')
+    public static function isValidNonce($message, $nonce, $frontString = '000000'): bool
     {
-        // Difficulty - the number of zeros we want
+        // Difficulty - the number of zeros we want:
         return 0 === strpos(hash('sha256',$message . $nonce), $frontString);
     }
 }
-
-
