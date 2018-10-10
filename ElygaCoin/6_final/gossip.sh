@@ -1,5 +1,5 @@
 #!/bin/bash
-
+clear
 # NOTE: user name is required and $peer is required.
 # Examples:
 # execute with initial node Eligijus:  ./gossip.sh Eligijus
