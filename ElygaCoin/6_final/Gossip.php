@@ -31,12 +31,12 @@ class Gossip
     public function loop()
     {
         while (true) {
-            print("\033[37;40m" . date_format(new \DateTime(), 'Y.m.d H:i:s') . " --Networks--:\033[39;49m\n%s\n");
+            print("\n\033[37;40m" . date_format(new \DateTime(), 'Y.m.d H:i:s') . " --Networks--:\033[39;49m\n");
             foreach (array_keys($this->state->peers) as $port) {
                 if ($port == $this->port) {
                     continue;
                 }
-                printf("--Gossip with %d\n", $port);
+                printf("Gossip with %d", $port);
                 $this->withPeer($port);
             }
             $this->displayState();
@@ -68,11 +68,22 @@ class Gossip
             ]
         ]));
 
-        return base64_decode(unserialize($peerState));
+        return unserialize(base64_decode($peerState));
     }
 
     private function displayState()
     {
-        print("---displayState--");
+        $peersArray = [];
+        $balancesAsString = "";
+
+        foreach (array_keys($this->state->peers) as $peer) {
+            $peersArray[] = $peer;
+        }
+
+        if ($this->state->blockChain) {
+            $balancesAsString = $this->state->blockChain->balancesAsString();
+        }
+
+        print("\n{$this->name} peers: " . implode($peersArray, ",") . "; balances: \n" . $balancesAsString);
     }
 }
