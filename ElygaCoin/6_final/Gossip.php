@@ -82,8 +82,8 @@ class Gossip
             $peerStateDecoded = base64_decode($peerState);
             $state = unserialize($peerStateDecoded);
             if ($state instanceof State) {
-                printf("\e[0;32m" . date_format(new \DateTime(),
-                        'Y.m.d H:i:s') . " gossip {$port} returned correct state.\e[0m\n");
+//                printf("\e[0;32m" . date_format(new \DateTime(),
+//                        'Y.m.d H:i:s') . " gossip {$port} returned correct state.\e[0m\n");
             } else {
                 $state = null;
                 printf("\e[0;31m" . date_format(new \DateTime(),

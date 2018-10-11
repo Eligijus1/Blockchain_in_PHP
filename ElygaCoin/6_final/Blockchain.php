@@ -84,7 +84,7 @@ class Blockchain implements \Countable
     {
         $data = [];
         foreach ($this->computeBalances() as $publicKey => $amount) {
-            $data[] = sprintf("%s = %s ElygaCoins", substr($publicKey, 72, 7), $amount);
+            $data[] = sprintf("%s = %s coins", substr($publicKey, 72, 7), $amount);
         }
 
         return implode("\n", $data);
