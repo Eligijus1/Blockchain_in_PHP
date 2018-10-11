@@ -1,6 +1,8 @@
 <?php
 namespace ElygaCoinFinal;
 
+//header('Content-Type: text/html; charset=ISO-8859-1');
+
 require_once __DIR__ . '/State.php';
 require_once __DIR__ . '/Gossip.php';
 require_once __DIR__ . '/Key.php';
@@ -9,7 +11,6 @@ require_once __DIR__ . '/Blockchain.php';
 require_once __DIR__ . '/Block.php';
 require_once __DIR__ . '/Pow.php';
 require_once __DIR__ . '/Transaction.php';
-
 
 if ('/gossip' == $_SERVER['PATH_INFO'] && 'POST' == $_SERVER['REQUEST_METHOD']) {
     $port = $_SERVER['SERVER_PORT'];
@@ -32,11 +33,6 @@ if ('/gossip' == $_SERVER['PATH_INFO'] && 'POST' == $_SERVER['REQUEST_METHOD']) 
     //error_log("DEBUG: will return state: " . base64_decode($stateEncoded));
     //error_log("DEBUG: will return state: " . base64_decode($stateEncoded));
 
-    header('Content-Type: text/html; charset=utf-8');
-    echo $stateEncoded;
-    //print base64_decode($stateEncoded);
-    //echo eval(gzdeflate($stateEncoded, strlen($stateEncoded)));
-    //echo $stateEncoded;
-    //echo serialize($state);
+    print $stateEncoded;
 }
 

@@ -79,9 +79,7 @@ class Gossip
 
         $state = null;
         if ($peerState) {
-            //$peerStateDecoded = base64_decode(trim($peerState));
-            $peerStateDecoded = trim($peerState);
-            print $peerStateDecoded;
+            $peerStateDecoded = base64_decode($peerState);
             $state = unserialize($peerStateDecoded);
             if ($state instanceof State) {
                 printf("\e[0;32m" . date_format(new \DateTime(),

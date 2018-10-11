@@ -34,8 +34,8 @@ class State
     public function save(): void
     {
         file_put_contents(self::file($this->name), serialize($this));
-
-        print("\n\e[0;33m" . date_format(new \DateTime(), 'Y.m.d H:i:s') . " Saved {$this->name} state to file\e[0m\n");
+//
+//        print("\n\e[0;33m" . date_format(new \DateTime(), 'Y.m.d H:i:s') . " Saved {$this->name} state to file\e[0m\n");
     }
 
     public static function load($name): self
@@ -58,8 +58,8 @@ class State
         foreach (array_keys($state->peers) as $peer) {
             $this->peers[$peer] = true;
         }
-        print("\n\e[0;33m" . date_format(new \DateTime(),
-                'Y.m.d H:i:s') . " Updated {$this->name} state to file\e[0m\n");
+//        print("\n\e[0;33m" . date_format(new \DateTime(),
+//                'Y.m.d H:i:s') . " Updated {$this->name} state to file\e[0m\n");
         $this->save();
     }
 
