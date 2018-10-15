@@ -36,3 +36,46 @@ if ('/gossip' == $_SERVER['PATH_INFO'] && 'POST' == $_SERVER['REQUEST_METHOD']) 
     print $stateEncoded;
 }
 
+if ('/transfer' == $_SERVER['PATH_INFO'] && 'POST' == $_SERVER['REQUEST_METHOD']) {
+    $port = $_SERVER['SERVER_PORT'];
+    $user = file_get_contents("data/{$port}.user");
+    $state = State::load($user);
+    $from = $_POST['from'];
+    $to = $_POST['to'];
+    $amount = (int)$_POST['amount'];
+    $key = Key::load($user);
+    $transaction = new Transaction($from, $to, $amount, $key->privateKey);
+    $state->blockChain->add($transaction);
+
+    $state2 = State::load($user);
+    $state2->update($state);
+
+    print 'OK';
+}
+
+if ('/balances' == $_SERVER['PATH_INFO'] && 'GET' == $_SERVER['REQUEST_METHOD']) {
+    $port = $_SERVER['SERVER_PORT'];
+    $user = file_get_contents("data/{$port}.user");
+    $state = State::load($user);
+
+    printf("Balances: \n%s", $state->blockChain->balancesAsString());
+    printf("\n");
+}
+
+if ('/blocks' == $_SERVER['PATH_INFO'] && 'GET' == $_SERVER['REQUEST_METHOD']) {
+    $port = $_SERVER['SERVER_PORT'];
+    $user = file_get_contents("data/{$port}.user");
+    $state = State::load($user);
+
+    $blocks = $state->blockChain->blocks;
+
+    printf("Blocks:\n");
+    foreach ($blocks as $block) {
+        printf("\nfrom " . substr($block->transaction->from, 72, 7) . " to " . substr($block->transaction->to, 72, 7) . " " . $block->transaction->amount);
+    }
+
+    print_r($state->peers);
+
+
+    printf("\n");
+}

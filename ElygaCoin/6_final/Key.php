@@ -20,11 +20,17 @@ class Key
     private function save(): void
     {
         file_put_contents(self::file($this->name), serialize($this));
+        file_put_contents(self::filePublic($this->name), $this->publicKey);
     }
 
     private static function file($name)
     {
         return __DIR__ . '/data/' . trim($name) . '.key';
+    }
+
+    private static function filePublic($name)
+    {
+        return __DIR__ . '/data/' . trim($name) . '.pub';
     }
 
     public static function load($name): self

@@ -17,7 +17,7 @@ class Blockchain implements \Countable
         return count($this->blocks);
     }
 
-    public function add($message)
+    public function add(Transaction $message)
     {
         $this->blocks[] = new Block($message, $this->blocks[count($this->blocks) - 1]);
     }

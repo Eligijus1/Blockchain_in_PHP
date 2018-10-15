@@ -34,6 +34,7 @@ class Gossip
     public function loop()
     {
         while (true) {
+            system('clear');
             print("\n\033[37;40m" . date_format(new \DateTime(), 'Y.m.d H:i:s') . " --Networks--:\033[39;49m\n");
             foreach (array_keys($this->state->peers) as $port) {
                 //print("loop: {$port}\n");
@@ -97,7 +98,6 @@ class Gossip
     private function displayState()
     {
         $peersPortsString = "";
-        $balancesAsString = "";
 
         foreach (array_keys($this->state->peers) as $port) {
             if ($port == $this->port) {
@@ -107,12 +107,12 @@ class Gossip
             $peersPortsString .= $port;
         }
 
-        if ($this->state->blockChain) {
-            $balancesAsString = $this->state->blockChain->balancesAsString();
-        }
+//        if ($this->state->blockChain) {
+//            $balancesAsString = $this->state->blockChain->balancesAsString();
+//        }
+        $balancesAsString = $this->state->blockChain->balancesAsString();
 
-        //print("\n{$this->name} peers: {$peersPortsString} and balances: \n" . $balancesAsString);
-        print("\n\e[0;34m" . date_format(new \DateTime(),
-                'Y.m.d H:i:s') . " {$this->name} peers: {$peersPortsString} and balances: \n{$balancesAsString}\e[0m\n");
+        print("\n\e[0;34m{$this->name} peers: {$peersPortsString}\e[0m\n");
+        print("\n\e[0;34m{$this->name} balances: \n{$balancesAsString}\e[0m\n");
     }
 }
