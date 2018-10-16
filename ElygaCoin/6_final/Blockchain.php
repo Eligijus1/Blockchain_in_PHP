@@ -44,7 +44,6 @@ class Blockchain implements \Countable
     private function areSpendsValid(): bool
     {
         $balances = $this->computeBalances();
-        error_log("\e[0;33mBalances amount is " . count($balances) . ".\e[0m");
         foreach ($balances as $publicKey => $amount) {
             if ($amount < 0) {
                 error_log("\e[0;31mERROR: Block chain has wrong balance.\e[0m");
