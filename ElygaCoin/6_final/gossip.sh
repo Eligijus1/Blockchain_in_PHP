@@ -17,7 +17,9 @@ PEER=$2
 echo "Starting node for user $1 with peer $PEER"
 
 if ["$PEER" == ""]; then
+    # If no peer, starting mew network:
     killall php
+    find data/ -type f -not -name 'index.html' -delete
 else
     echo "Boostrapping network with node $PEER"
     peerPort=`cat data/$PEER.port`
