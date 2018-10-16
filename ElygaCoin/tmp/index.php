@@ -39,49 +39,67 @@ if ('/gossip' == $_SERVER['PATH_INFO'] && 'POST' == $_SERVER['REQUEST_METHOD']) 
 
 if ('/transfer' == $_SERVER['PATH_INFO'] && 'POST' == $_SERVER['REQUEST_METHOD']) {
     $port = $_SERVER['SERVER_PORT'];
-    $portTo = file_get_contents("data/" . $_POST['toName'] . ".port");
+    $portTo = file_get_contents("data/" . $_POST['to'] . ".port");
     $user = file_get_contents("data/{$port}.user");
     $state = State::load($user);
-    $from = $_POST['from'];
-    $to = $_POST['to'];
-    //$from = file_get_contents("data/" . $_POST['fromName'] . ".pub");
-    $to = file_get_contents("data/" . $_POST['toName'] . ".pub");
+    $from = file_get_contents("data/" . $_POST['from'] . ".pub");
+    $to = file_get_contents("data/" . $_POST['to'] . ".pub");
     $amount = (int)$_POST['amount'];
     $key = Key::load($user);
     $transaction = new Transaction($from, $to, $amount, $key->privateKey);
     $state->blockChain->add($transaction);
 
-    print($to);
-    print(file_get_contents("data/Jonas.pub"));
-
-    if (!$state->blockChain->isValid()) {
-        print("\e[0;31mERROR: New blockchain is not valid.\e[0m\n");
-        //return;
+    // Some income data checking:
+    if (empty($from)) {
+        print("\e[0;31mERROR: From not specified.\e[0m\n");
+        return;
     }
+    if (empty($to)) {
+        print("\e[0;31mERROR: To not specified.\e[0m\n");
+        return;
+    }
+    if (empty($amount)) {
+        print("\e[0;31mERROR: Amount not specified.\e[0m\n");
+        return;
+    }
+    if ($from === $to) {
+        print("\e[0;31mERROR: Trying transfer coins to same account.\e[0m\n");
+        return;
+    }
+    if (empty($portTo)) {
+        print("\e[0;31mERROR: To port extraction failed.\e[0m\n");
+        return;
+    }
+
+//    $data = base64_encode(serialize($state));
+//    $peerState = @file_get_contents('http://localhost:' . $portTo . '/gossip', false, stream_context_create([
+//        'http' => [
+//            'method' => 'POST',
+//            'header' => "Content-type: application/json\r\nContent-length: " . strlen($data) . "\r\n",
+//            'content' => $data
+//        ]
+//    ]));
+
+//    $state->save();
+//    $state->reload();
 
     //v1:
-    //$state2 = State::load($user);
-    //$state2->update($state);
+    $state2 = State::load($user);
+    $state2->update($state);
 
     //v2:
-    //$state->save();
-    //$state->reload();
+//    if ($state->blockChain->isValid()) {
+//        $state->save();
+//        $state = State::load($user);
+//        print("\e[0;32mBlockchain count: " . $state->blockChain->count() . "\e[0m\n");
+//        print("\e[0;32mOK\e[0m\n");
+//    } else {
+//        print("\e[0;31mERROR: New block chain preparation failed.\e[0m\n");
+//    }
 
-    //v3:
-    $data = base64_encode(serialize($state));
-    $peerState = @file_get_contents('http://localhost:' . $portTo . '/gossip', false, stream_context_create([
-        'http' => [
-            'method' => 'POST',
-            'header' => "Content-type: application/json\r\nContent-length: " . strlen($data) . "\r\n",
-            'content' => $data
-        ]
-    ]));
-
-    if ($peerState) {
-        print("\e[0;32mOK\e[0m\n");
-    } else {
-        print("\e[0;31mERROR: Peer state is empty.\e[0m\n");
-    }
+    // Print final information:
+    print("\e[0;32mBlockchain count: " . $state->blockChain->count() . "\e[0m\n");
+    print("\e[0;32mOK\e[0m\n");
 }
 
 if ('/balances' == $_SERVER['PATH_INFO'] && 'GET' == $_SERVER['REQUEST_METHOD']) {
