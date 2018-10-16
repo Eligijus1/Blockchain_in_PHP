@@ -50,6 +50,10 @@ class State
     {
         if ($this->blockChain) {
             $this->blockChain->update($state->blockChain);//Communicating not first time
+            //DEBUG:
+            if ($this->blockChain && $state->blockChain) {
+                error_log("\e[0;33mUpdate current " . $this->blockChain->count() . " blockchain with " . $state->blockChain->count() . ".\e[0m");
+            }
         } else {
             $this->blockChain = $state->blockChain;//Initial first time communication
         }

@@ -39,6 +39,7 @@ class Gossip
                 if ($port == $this->port) {
                     continue;
                 }
+                //$this->state->reload();//!!!
                 $this->withPeer($port);
             }
             $this->state->reload();

@@ -26,20 +26,28 @@ class Blockchain implements \Countable
     {
         foreach ($this->blocks as $i => $block) {
             if (!$block->isValid()) {
+                error_log("\e[0;31mERROR: Block {$i} is not valid.\e[0m");
                 return false;
             }
             if ($i != 0 && $this->blocks[$i - 1]->hash != $block->previousHash) {
+                error_log("\e[0;31mERROR: Block {$i} wrong hash.\e[0m");
                 return false;
             }
         }
-        return $this->areSpendsValid();
+        $spendsValid = $this->areSpendsValid();
+        if (!$spendsValid) {
+            error_log("\e[0;31mERROR: Block chain spend not valid.\e[0m");
+        }
+        return $spendsValid;
     }
 
     private function areSpendsValid(): bool
     {
         $balances = $this->computeBalances();
+        error_log("\e[0;33mBalances amount is " . count($balances) . ".\e[0m");
         foreach ($balances as $publicKey => $amount) {
             if ($amount < 0) {
+                error_log("\e[0;31mERROR: Block chain has wrong balance.\e[0m");
                 return false;
             }
         }
@@ -69,12 +77,15 @@ class Blockchain implements \Countable
     public function update(?self $peerBlockChain)
     {
         if (null === $peerBlockChain) {
+            error_log("\e[0;31mERROR: Blockchain from peer is null.\e[0m");
             return;
         }
         if (count($peerBlockChain) <= count($this)) {
+            error_log("\e[0;31mERROR: Peer blockchain is shorter.\e[0m");
             return;
         }
-        if ($peerBlockChain->isValid()) {
+        if (!$peerBlockChain->isValid()) {
+            error_log("\e[0;31mERROR: Peer blockchain not valid.\e[0m");
             return;
         }
         $this->blocks = $peerBlockChain->blocks;

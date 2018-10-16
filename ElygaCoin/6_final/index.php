@@ -74,24 +74,21 @@ if ('/transfer' == $_SERVER['PATH_INFO'] && 'POST' == $_SERVER['REQUEST_METHOD']
     //$state2->update($state);
 
     //v2:
-    //$state->save();
-    //$state->reload();
+    $state->save();
+    $state->reload();
 
     //v3:
-    $data = base64_encode(serialize($state));
-    $peerState = @file_get_contents('http://localhost:' . $portTo . '/gossip', false, stream_context_create([
-        'http' => [
-            'method' => 'POST',
-            'header' => "Content-type: application/json\r\nContent-length: " . strlen($data) . "\r\n",
-            'content' => $data
-        ]
-    ]));
+//    $data = base64_encode(serialize($state));
+//    $peerState = @file_get_contents('http://localhost:' . $portTo . '/gossip', false, stream_context_create([
+//        'http' => [
+//            'method' => 'POST',
+//            'header' => "Content-type: application/json\r\nContent-length: " . strlen($data) . "\r\n",
+//            'content' => $data
+//        ]
+//    ]));
 
-    if ($peerState) {
-        print("\e[0;32mOK\e[0m\n");
-    } else {
-        print("\e[0;31mERROR: Peer state is empty.\e[0m\n");
-    }
+    // Transfer finished, no problems:
+    print("\e[0;32mOK\e[0m\n");
 }
 
 if ('/balances' == $_SERVER['PATH_INFO'] && 'GET' == $_SERVER['REQUEST_METHOD']) {
@@ -115,9 +112,4 @@ if ('/blocks' == $_SERVER['PATH_INFO'] && 'GET' == $_SERVER['REQUEST_METHOD']) {
         printf("\nfrom " . substr($block->transaction->from, 72, 7) . " to " . substr($block->transaction->to, 72,
                 7) . " " . $block->transaction->amount);
     }
-
-    print_r($state->peers);
-
-
-    printf("\n");
 }
