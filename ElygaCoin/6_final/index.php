@@ -42,15 +42,25 @@ if ('/transfer' == $_SERVER['PATH_INFO'] && 'POST' == $_SERVER['REQUEST_METHOD']
     $state = State::load($user);
     $from = $_POST['from'];
     $to = $_POST['to'];
+//    $from = file_get_contents("data/" . $_POST['from'] . ".pub");
+//    $to = file_get_contents("data/" . $_POST['to'] . ".pub");
     $amount = (int)$_POST['amount'];
     $key = Key::load($user);
     $transaction = new Transaction($from, $to, $amount, $key->privateKey);
     $state->blockChain->add($transaction);
 
-    $state2 = State::load($user);
-    $state2->update($state);
+    if (!$state->blockChain->isValid()) {
+        print("\e[0;31mERROR: New blockchain is not valid.\e[0m\n");
+        //return;
+    }
 
-    print 'OK';
+//    $state2 = State::load($user);
+//    $state2->update($state);
+
+    $state->save();
+    $state->reload();
+
+    print("\e[0;32mOK\e[0m\n");
 }
 
 if ('/balances' == $_SERVER['PATH_INFO'] && 'GET' == $_SERVER['REQUEST_METHOD']) {
