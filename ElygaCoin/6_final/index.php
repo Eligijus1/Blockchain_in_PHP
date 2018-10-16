@@ -20,8 +20,18 @@ if ('/gossip' == $_SERVER['PATH_INFO'] && 'POST' == $_SERVER['REQUEST_METHOD']) 
     $dataDecoded = base64_decode($dataReceived);
     /** @var State $stateReceived */
     $stateReceived = unserialize($dataDecoded);
-
     $state = State::load($user);
+
+    if ($stateReceived->blockChain) {
+        if (!$stateReceived->blockChain->isValid()) {
+            error_log("\e[0;31mERROR: received state is wrong.\e[0m\n");
+            return;
+        } else {
+            error_log("\e[0;32m" . $stateReceived->blockChain->count() . " Blocks in received blockchain.\e[0m");
+            error_log("\e[0;32m" . $state->blockChain->count() . " Blocks in current blockchain.\e[0m");
+        }
+    }
+
     $state->update($stateReceived);
     $stateEncoded = base64_encode(serialize($state));
 
