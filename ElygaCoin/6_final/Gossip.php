@@ -33,13 +33,12 @@ class Gossip
     public function loop()
     {
         while (true) {
-            //system('clear');
+            system('clear');
             print("\n\033[37;40m" . date_format(new \DateTime(), 'Y.m.d H:i:s') . " --Networks--\033[39;49m\n");
             foreach (array_keys($this->state->peers) as $port) {
                 if ($port == $this->port) {
                     continue;
                 }
-                //$this->state->reload();//!!!
                 $this->withPeer($port);
             }
             $this->state->reload();

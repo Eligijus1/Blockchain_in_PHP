@@ -77,11 +77,9 @@ class Blockchain implements \Countable
     public function update(?self $peerBlockChain)
     {
         if (null === $peerBlockChain) {
-            error_log("\e[0;31mERROR: Blockchain from peer is null.\e[0m");
             return;
         }
         if (count($peerBlockChain) <= count($this)) {
-            error_log("\e[0;31mERROR: Peer blockchain is shorter.\e[0m");
             return;
         }
         if (!$peerBlockChain->isValid()) {
