@@ -44,15 +44,15 @@ if ('/transfer' == $_SERVER['PATH_INFO'] && 'POST' == $_SERVER['REQUEST_METHOD']
     $state = State::load($user);
     $from = $_POST['from'];
     $to = $_POST['to'];
-    //$from = file_get_contents("data/" . $_POST['fromName'] . ".pub");
+    $from = file_get_contents("data/" . $_POST['fromName'] . ".pub");
     $to = file_get_contents("data/" . $_POST['toName'] . ".pub");
     $amount = (int)$_POST['amount'];
     $key = Key::load($user);
     $transaction = new Transaction($from, $to, $amount, $key->privateKey);
     $state->blockChain->add($transaction);
 
-    print($to);
-    print(file_get_contents("data/Jonas.pub"));
+//    print($to);
+//    print(file_get_contents("data/Jonas.pub"));
 
     if (!$state->blockChain->isValid()) {
         print("\e[0;31mERROR: New blockchain is not valid.\e[0m\n");
